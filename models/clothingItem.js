@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const user = require("../models/user");
+const user = require("./user");
+
 const { Schema } = mongoose;
 
 const clothingItem = new Schema({
