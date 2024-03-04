@@ -12,8 +12,6 @@ mongoose
   })
   .catch(console.error);
 
-const routes = require("./routes");
-
 app.use((req, res, next) => {
   req.user = {
     _id: "65e4b0cfaffed1225e705c32",
@@ -21,7 +19,6 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
-app.use(routes);
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
