@@ -1,3 +1,6 @@
+const bcrypt = require("bcrypt");
+const { JWT_SECRET } = require("../utils/config");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const {
   BAD_REQUEST,
@@ -5,27 +8,66 @@ const {
   SERVER_ERROR,
   OK,
   CREATED,
+  UNAUTHORIZED,
+  CONFLICT,
 } = require("../utils/errors");
 
-// GET /users
+const login = (req, res) => {
+  const { email, password } = req.body;
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.status(OK).send(users);
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.status(OK).send({ token });
     })
     .catch((err) => {
       console.error(err);
+      if (!email || !password) {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+      }
+      return res.status(UNAUTHORIZED).send({ message: "Authorization Error" });
+    });
+};
+
+// PATCH /users/me
+
+const updateUser = (req, res) => {
+  const { name, avatar } = req.body;
+  const userId = req.user._id;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true },
+  )
+    .orFail()
+    .then((user) => {
+      console.log(user);
+      return user;
+    })
+    .then((user) => {
+      res.status(OK).send(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Document Not Found" });
+      }
+      if (err.name === "Validation Error") {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+      }
       return res
         .status(SERVER_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
 
-// GET /users/:userId
+// GET /users/me
 
-const getUser = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
 
   User.findById(userId)
     .orFail()
@@ -35,7 +77,7 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Document Not Found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
@@ -49,14 +91,23 @@ const getUser = (req, res) => {
 // POST /users
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
-    .then((user) => {
-      res.status(CREATED).send(user);
-    })
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((user) =>
+      res
+        .status(CREATED)
+        .send({ name: user.name, avatar: user.avatar, email: user.email }),
+    )
     .catch((err) => {
       console.error(err);
+      if (err.code === 11000) {
+        return res
+          .status(CONFLICT)
+          .send({ message: "User with this email is already exists." });
+      }
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
       }
@@ -66,4 +117,9 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, getUser, createUser };
+module.exports = {
+  createUser,
+  login,
+  getCurrentUser,
+  updateUser,
+};

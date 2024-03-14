@@ -4,6 +4,9 @@ const SERVER_ERROR = 500;
 const OK = 200;
 const CREATED = 201;
 const NO_CONTENT = 204;
+const UNAUTHORIZED = 401;
+const CONFLICT = 409;
+const FORBIDDEN = 403;
 
 module.exports = {
   BAD_REQUEST,
@@ -12,4 +15,7 @@ module.exports = {
   OK,
   CREATED,
   NO_CONTENT,
+  UNAUTHORIZED,
+  CONFLICT,
+  FORBIDDEN,
 };

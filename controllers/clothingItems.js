@@ -5,6 +5,7 @@ const {
   SERVER_ERROR,
   OK,
   CREATED,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 // GET /items
@@ -35,7 +36,7 @@ const createClothingItem = (req, res) => {
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
       console.log(item);
-      res.status(CREATED).send({ data: item });
+      res.status(CREATED).send(item);
     })
     .catch((err) => {
       console.error(err);
@@ -53,15 +54,19 @@ const createClothingItem = (req, res) => {
 const deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById({ _id: itemId })
     .orFail()
     .then((item) => {
-      res.status(OK).send(item);
+      if (item.owner.toString() !== req.user._id.toString()) {
+        return res.status(FORBIDDEN).send({ message: "This is not your item" });
+      }
+      return ClothingItem.deleteOne({ _id: itemId });
     })
+    .then(() => res.status(OK).send({ message: "Item successfully deleted." }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Document Not Found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
@@ -75,12 +80,9 @@ const deleteClothingItem = (req, res) => {
 // PUT /items/:itemId/likes
 
 const likeItem = (req, res) => {
-  const { itemId } = req.params;
-  const userId = req.user._id;
-
   ClothingItem.findByIdAndUpdate(
-    itemId,
-    { $addToSet: { likes: userId } },
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .orFail()
@@ -90,7 +92,7 @@ const likeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Document Not Found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
@@ -116,7 +118,7 @@ const dislikeItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: err.message });
+        return res.status(NOT_FOUND).send({ message: "Document Not Found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid data" });
