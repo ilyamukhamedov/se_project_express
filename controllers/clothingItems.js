@@ -60,9 +60,10 @@ const deleteClothingItem = (req, res) => {
       if (item.owner.toString() !== req.user._id.toString()) {
         return res.status(FORBIDDEN).send({ message: "This is not your item" });
       }
-      return ClothingItem.deleteOne({ _id: itemId });
+      return ClothingItem.deleteOne({ _id: itemId }).then(() =>
+        res.status(OK).send({ message: "Item successfully deleted." }),
+      );
     })
-    .then(() => res.status(OK).send({ message: "Item successfully deleted." }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
