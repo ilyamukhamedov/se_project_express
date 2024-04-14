@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const user = require("./user");
+// const user = require("./user");
 
 const { Schema } = mongoose;
 
@@ -21,18 +21,18 @@ const clothingItem = new Schema({
     required: true,
     validate: {
       validator: (value) => validator.isURL(value),
-      message: "You must enter a valid URL",
     },
+    message: "You must enter a valid URL",
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: user,
+    // ref: "user",
     required: true,
   },
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: user,
+      ref: "user",
     },
   ],
   createdAt: {

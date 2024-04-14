@@ -8,6 +8,7 @@ const handleAuthError = (res) => {
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
+  console.log(req.user);
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return handleAuthError(res);

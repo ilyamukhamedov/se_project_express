@@ -1,6 +1,12 @@
 # WTWR (What to Wear?): Back End
 
-This back-end project is focused on creating a server for the WTWR application. This authorizes users to log into their account so that they can post, delete, and like or unlike items.
+This back-end project is focused on creating a server for the WTWR application.
+
+## Features
+
+- Implement a database for user accounts to enable logging in.
+- Enable registration so users can create an account.
+- Allow logged-in users to add, delete, like, or unlike cards, and change profile information.
 
 ## Running the Project
 
@@ -16,7 +22,12 @@ This back-end project is focused on creating a server for the WTWR application. 
 - Express.js
 - MongoDB
 - Mongoose
+- Npm(Joi, celebrate, winston, express-winston, ESLint)
 
 #### Link
 
 GitHub Repository: https://github.com/Kreker911/se_project_express
+
+#### Delpoy
+
+https://wtwr.sktco.com/
