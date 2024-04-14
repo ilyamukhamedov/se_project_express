@@ -30,4 +30,4 @@ GitHub Repository: https://github.com/Kreker911/se_project_express
 
 #### Delpoy
 
-https://wtwr.sktco.com/
+https://wtwr.sktco.com
