@@ -1,8 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  OK,
-  CREATED,
-} = require("../utils/errors");
+const { OK, CREATED } = require("../utils/errors");
 const ForbiddenError = require("../errors/ForbiddenError");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
@@ -56,7 +53,7 @@ const deleteClothingItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id.toString()) {
-        next(new ForbiddenError("This is not your item"));
+        return next(new ForbiddenError("This is not your item"));
       }
 
       return ClothingItem.deleteOne({ _id: itemId }).then(() =>
@@ -67,14 +64,14 @@ const deleteClothingItem = (req, res, next) => {
       console.error(err);
 
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError("Document Not Found"));
+        return next(new NotFoundError("Document Not Found"));
       }
 
       if (err.name === "CastError") {
-        next(new BadRequestError("Invalid data"));
+        return next(new BadRequestError("Invalid data"));
       }
 
-      next(err);
+      return next(err);
     });
 };
 
