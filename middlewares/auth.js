@@ -11,7 +11,7 @@ const auth = (req, res, next) => {
   console.log(req.user);
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return handleAuthError(res);
+    return handleAuthError(next);
   }
 
   const token = authorization.replace("Bearer ", "");
@@ -20,7 +20,7 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return handleAuthError(res);
+    return handleAuthError(next);
   }
 
   req.user = payload;
