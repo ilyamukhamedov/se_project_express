@@ -24,9 +24,9 @@ This back-end project is focused on creating a server for the WTWR application.
 - Mongoose
 - Npm(Joi, celebrate, winston, express-winston, ESLint)
 
-#### Link
+#### Frontend
 
-GitHub Repository: https://github.com/Kreker911/se_project_express
+https://github.com/Kreker911/se_project_react
 
 #### Delpoy
 
