@@ -7,10 +7,8 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItems");
 const { auth } = require("../middlewares/auth");
-const {
-  validateClothingItem,
-  validateId,
-} = require("../middlewares/validation");
+const { validateClothingItem, validateId } =
+  require("../middlewares/validation").default;
 
 router.get("/", getClothingItems);
 
