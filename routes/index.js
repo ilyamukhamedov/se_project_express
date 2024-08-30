@@ -14,7 +14,7 @@ router.use("/users", userRouter);
 
 router.use("/items", itemRouter);
 
-router.use((next) => {
+router.use(() => {
   throw new NotFoundError("Router Not Found");
 });
 
