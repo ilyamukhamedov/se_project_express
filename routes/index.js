@@ -3,8 +3,10 @@ const userRouter = require("./users");
 const itemRouter = require("./clothingItems");
 const NotFoundError = require("../errors/NotFoundError");
 const { login, createUser } = require("../controllers/users");
-const { validateUserLogin, validateUserInfo } =
-  require("../middlewares/validation").default;
+const {
+  validateUserLogin,
+  validateUserInfo,
+} = require("../middlewares/validation");
 
 router.post("/signin", validateUserLogin, login);
 
