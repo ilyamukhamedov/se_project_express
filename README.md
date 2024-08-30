@@ -30,4 +30,4 @@ https://github.com/Kreker911/se_project_react
 
 #### Delpoy
 
-https://wtwr.sktco.com
+https://www.wtwr.space
